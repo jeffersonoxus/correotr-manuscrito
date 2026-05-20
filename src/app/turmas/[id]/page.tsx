@@ -26,10 +26,10 @@ export default function TurmaDetailPage() {
   const carregar = () => {
     fetch(`/api/alunos?turmaId=${params.id}`)
       .then((r) => r.json())
-      .then(setAlunos);
+      .then((data) => setAlunos(Array.isArray(data) ? data : []));
     fetch("/api/turmas")
       .then((r) => r.json())
-      .then((all) => setTurma(all.find((t: Turma) => t.id === params.id) || null));
+      .then((all) => setTurma(Array.isArray(all) ? all.find((t: Turma) => t.id === params.id) || null : null));
   };
 
   useEffect(() => {

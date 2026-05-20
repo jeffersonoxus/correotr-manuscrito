@@ -29,11 +29,11 @@ export default function DashboardPage() {
       return;
     }
     Promise.all([
-      fetch("/api/turmas").then((r) => r.json()),
-      fetch("/api/provas").then((r) => r.json()),
+      fetch("/api/turmas").then((r) => r.json()).catch(() => []),
+      fetch("/api/provas").then((r) => r.json()).catch(() => []),
     ]).then(([turmasData, provasData]) => {
-      setTurmas(turmasData);
-      setProvas(provasData);
+      setTurmas(Array.isArray(turmasData) ? turmasData : []);
+      setProvas(Array.isArray(provasData) ? provasData : []);
       setLoading(false);
     });
   }, [router]);

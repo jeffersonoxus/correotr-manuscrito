@@ -45,8 +45,9 @@ export default function NovaProvaPage() {
   useEffect(() => {
     if (!localStorage.getItem("auth_token")) return router.push("/");
     fetch("/api/turmas").then((r) => r.json()).then((data) => {
-      setTurmas(data);
-      if (data.length === 1) setTurmaId(data[0].id);
+      const arr = Array.isArray(data) ? data : [];
+      setTurmas(arr);
+      if (arr.length === 1) setTurmaId(arr[0].id);
     });
   }, [router]);
 

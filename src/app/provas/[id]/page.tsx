@@ -38,15 +38,21 @@ export default function ProvaDetailPage() {
 
   const carregar = async () => {
     if (!localStorage.getItem("auth_token")) return router.push("/");
-    const res = await fetch(`/api/provas/${params.id}`);
-    const data = await res.json();
-    setProva(data);
-    setQuestoes(data.questoes || []);
-    setCorrecoes(data.correcoes || []);
+    try {
+      const res = await fetch(`/api/provas/${params.id}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setProva(data);
+      setQuestoes(Array.isArray(data.questoes) ? data.questoes : []);
+      setCorrecoes(Array.isArray(data.correcoes) ? data.correcoes : []);
 
-    if (data.turmaId) {
-      const resAlunos = await fetch(`/api/alunos?turmaId=${data.turmaId}`);
-      setAlunos(await resAlunos.json());
+      if (data.turmaId) {
+        const resAlunos = await fetch(`/api/alunos?turmaId=${data.turmaId}`);
+        const alunosData = await resAlunos.json();
+        setAlunos(Array.isArray(alunosData) ? alunosData : []);
+      }
+    } catch {
+      setProva(null);
     }
   };
 

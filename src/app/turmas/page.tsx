@@ -17,7 +17,7 @@ export default function TurmasPage() {
   const carregar = () => {
     fetch("/api/turmas")
       .then((r) => r.json())
-      .then(setTurmas);
+      .then((data) => setTurmas(Array.isArray(data) ? data : []));
   };
 
   useEffect(() => {

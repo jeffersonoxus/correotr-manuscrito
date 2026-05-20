@@ -34,11 +34,11 @@ function ProvasContent() {
   useEffect(() => {
     if (!localStorage.getItem("auth_token")) return router.push("/");
     Promise.all([
-      fetch("/api/provas").then((r) => r.json()),
-      fetch("/api/turmas").then((r) => r.json()),
+      fetch("/api/provas").then((r) => r.json()).catch(() => []),
+      fetch("/api/turmas").then((r) => r.json()).catch(() => []),
     ]).then(([p, t]) => {
-      setProvas(p);
-      setTurmas(t);
+      setProvas(Array.isArray(p) ? p : []);
+      setTurmas(Array.isArray(t) ? t : []);
     });
   }, [router]);
 
