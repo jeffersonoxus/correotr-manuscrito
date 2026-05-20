@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { toCamelCase } from "@/lib/caseHelper";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,10 +19,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     })
   );
 
-  return Response.json({
+  return Response.json(toCamelCase({
     ...prova,
     questoes: questoes || [],
     correcoes: correcoesComAlunos || [],
     alunos: alunos || [],
-  });
+  }));
 }

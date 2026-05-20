@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { toCamelCase } from "@/lib/caseHelper";
 import { nanoid } from "nanoid";
 
 export async function GET() {
   const { data, error } = await supabase.from("turmas").select("*").order("created_at");
   if (error) return Response.json({ error: error.message }, { status: 500 });
-  return Response.json(data);
+  return Response.json(toCamelCase(data));
 }
 
 export async function POST(req: NextRequest) {

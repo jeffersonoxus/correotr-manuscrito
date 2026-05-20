@@ -65,31 +65,37 @@ function CorrigirPage() {
   const carregarDados = async () => {
     if (!localStorage.getItem("auth_token")) return router.push("/");
 
-    const alunosIds = searchParams.get("alunos")?.split(",") || [];
+    try {
+      const alunosIds = searchParams.get("alunos")?.split(",") || [];
 
-    const res = await fetch(`/api/provas/${params.id}`);
-    const data = await res.json();
-    setQuestoes(data.questoes || []);
+      const res = await fetch(`/api/provas/${params.id}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setQuestoes(Array.isArray(data.questoes) ? data.questoes : []);
 
-    const resAlunos = await fetch(`/api/alunos?turmaId=${data.turmaId}`);
-    const todosAlunos: Aluno[] = await resAlunos.json();
-    const selectedAlunos = todosAlunos.filter((a) => alunosIds.includes(a.id));
-    setAlunosData(todosAlunos);
+      const resAlunos = await fetch(`/api/alunos?turmaId=${data.turmaId}`);
+      const alunosRaw = await resAlunos.json();
+      const todosAlunos: Aluno[] = Array.isArray(alunosRaw) ? alunosRaw : [];
+      const selectedAlunos = todosAlunos.filter((a) => alunosIds.includes(a.id));
+      setAlunosData(todosAlunos);
 
-    const inicialAlunos: AlunoCapturas[] = selectedAlunos.map((a) => ({
-      alunoId: a.id,
-      alunoNome: a.nome,
-      capturas: (data.questoes || []).map((q: Questao) => ({
-        questaoId: q.id,
-        questaoNumero: q.numero,
-        imageBase64: null,
-        textoExtraido: "",
-        textoManual: "",
-      })),
-      status: "pendente" as const,
-    }));
+      const inicialAlunos: AlunoCapturas[] = selectedAlunos.map((a) => ({
+        alunoId: a.id,
+        alunoNome: a.nome,
+        capturas: (data.questoes || []).map((q: Questao) => ({
+          questaoId: q.id,
+          questaoNumero: q.numero,
+          imageBase64: null,
+          textoExtraido: "",
+          textoManual: "",
+        })),
+        status: "pendente" as const,
+      }));
 
-    setAlunos(inicialAlunos);
+      setAlunos(inicialAlunos);
+    } catch (e) {
+      console.error("Erro ao carregar dados:", e);
+    }
     setLoading(false);
   };
 
